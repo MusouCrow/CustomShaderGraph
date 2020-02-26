@@ -22,65 +22,17 @@ namespace UnityEditor.ShaderGraph {
         public const int AlphaSlotId = 7;
         public const int AlphaThresholdSlotId = 8;
 
-        [SerializeField]
-        private SurfaceType surfaceType;
-
-        public SurfaceType SurfaceType {
-            get {
-                return surfaceType;
-            }
-            set {
-                if (surfaceType == value)
-                    return;
-                
-                surfaceType = value;
-                Dirty(ModificationScope.Graph);
-            }
-        }
-
-        [SerializeField]
-        private AlphaMode alphaMode;
-
-        public AlphaMode AlphaMode {
-            get {
-                return alphaMode;
-            }
-            set {
-                if (alphaMode == value)
-                    return;
-
-                alphaMode = value;
-                Dirty(ModificationScope.Graph);
-            }
-        }
-
-        [SerializeField]
-        private bool twoSided;
-
-        public ToggleData TwoSided {
-            get {
-                return new ToggleData(twoSided);
-            }
-            set {
-                if (twoSided == value.isOn)
-                    return;
-                
-                twoSided = value.isOn;
-                Dirty(ModificationScope.Graph);
-            }
-        }
-
         public CustomMasterNode() {
             this.UpdateNodeAfterDeserialization();
         }
 
-        public sealed override void UpdateNodeAfterDeserialization() {
+        public override void UpdateNodeAfterDeserialization() {
             base.UpdateNodeAfterDeserialization();
             this.name = "Custom Master";
 
             this.AddSlot(new ColorRGBMaterialSlot(ColorSlotId, ColorSlotName, ColorSlotName, SlotType.Input, Color.grey.gamma, ColorMode.Default, ShaderStageCapability.Fragment));
-            AddSlot(new Vector1MaterialSlot(AlphaSlotId, AlphaSlotName, AlphaSlotName, SlotType.Input, 1, ShaderStageCapability.Fragment));
-            AddSlot(new Vector1MaterialSlot(AlphaThresholdSlotId, AlphaClipThresholdSlotName, AlphaClipThresholdSlotName, SlotType.Input, 0, ShaderStageCapability.Fragment));
+            this.AddSlot(new Vector1MaterialSlot(AlphaSlotId, AlphaSlotName, AlphaSlotName, SlotType.Input, 1, ShaderStageCapability.Fragment));
+            this.AddSlot(new Vector1MaterialSlot(AlphaThresholdSlotId, AlphaClipThresholdSlotName, AlphaClipThresholdSlotName, SlotType.Input, 0, ShaderStageCapability.Fragment));
 
             this.RemoveSlotsNameNotMatching(new[] {
                 ColorSlotId,
@@ -88,9 +40,12 @@ namespace UnityEditor.ShaderGraph {
                 AlphaThresholdSlotId
             });
         }
-
-        protected override VisualElement CreateCommonSettingsElement() {
-            return new CustomSettingsView(this);
+        
+        public override void CollectShaderProperties(PropertyCollector properties, GenerationMode generationMode) {
+            base.CollectShaderProperties(properties, generationMode);
+            
+            PropertyUtil2.AddProperty(properties, "SrcBlend", "_SrcBlend", 1, true);
+            PropertyUtil2.AddProperty(properties, "DstBlend", "_DstBlend", 0, true);
         }
     }
 }

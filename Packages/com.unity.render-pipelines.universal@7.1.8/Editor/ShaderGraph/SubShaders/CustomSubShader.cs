@@ -5,12 +5,14 @@ using Data.Util;
 using UnityEditor.Graphing;
 using UnityEditor.ShaderGraph;
 using UnityEditor.ShaderGraph.Internal;
+using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 namespace UnityEditor.Rendering.Universal {
     class CustomSubShader : ICustomSubShader {
         private ShaderPass litPass;
+        private ShaderPass outlinePass;
         private ShaderPass depthOnlyPass;
         private ShaderPass shadowCasterPass;
 
@@ -32,25 +34,11 @@ namespace UnityEditor.Rendering.Universal {
                 baseActiveFields.Add("AlphaClip");
             }
 
-            if (masterNode.SurfaceType != ShaderGraph.SurfaceType.Opaque) {
-                baseActiveFields.Add("SurfaceType.Transparent");
-
-                if (masterNode.AlphaMode == AlphaMode.Alpha) {
-                    baseActiveFields.Add("BlendMode.Alpha");
-                }
-                else if (masterNode.AlphaMode == AlphaMode.Additive) {
-                    baseActiveFields.Add("BlendMode.Add");
-                }
-                else if (masterNode.AlphaMode == AlphaMode.Premultiply) {
-                    baseActiveFields.Add("BlendMode.Premultiply");
-                }
-            }
-
             return activeFields;
         }
 
         private static bool GenerateShaderPass(CustomMasterNode masterNode, ShaderPass pass, GenerationMode mode, ShaderGenerator result, List<string> sourceAssetDependencyPaths) {
-            UniversalShaderGraphUtilities.SetRenderState(masterNode.SurfaceType, masterNode.AlphaMode, masterNode.TwoSided.isOn, ref pass);
+            // UniversalShaderGraphUtilities.SetRenderState(masterNode.SurfaceType, masterNode.AlphaMode, masterNode.TwoSided.isOn, ref pass);
 
             var activeFields = GetActiveFieldsFromMasterNode(masterNode, pass);
             
@@ -84,6 +72,40 @@ namespace UnityEditor.Rendering.Universal {
                     "target 2.0",
                     "multi_compile_instancing",
                 },
+
+                BlendOverride = "Blend [_SrcBlend][_DstBlend]"
+            };
+
+            this.outlinePass = new ShaderPass() {
+                displayName = "Outline",
+                referenceName = "CUSTOM_OUTLINE_PASS",
+                passInclude = "Assets/Shader/Include/OutlinePass.hlsl",
+                varyingsInclude = "Assets/Shader/Include/Varyings.hlsl",
+
+                pixelPorts = new List<int>() {
+                    CustomMasterNode.ColorSlotId,
+                    CustomMasterNode.AlphaSlotId,
+                },
+
+                requiredAttributes = new List<string>() {
+                    "Attributes.positionOS",
+                    "Attributes.normalOS", 
+                },
+
+                includes = new List<string>() {
+                    "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl",
+                    "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl",
+                    "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl",
+                    "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl",
+                },
+                pragmas = new List<string>() {
+                    "prefer_hlslcc gles",
+                    "exclude_renderers d3d11_9x",
+                    "target 2.0",
+                    "multi_compile_instancing",
+                },
+
+                CullOverride = "Cull Front",
             };
 
             this.depthOnlyPass = new ShaderPass() {
@@ -173,16 +195,20 @@ namespace UnityEditor.Rendering.Universal {
             subShader.Indent();
 
             {
-                var surfaceTags = ShaderGenerator.BuildMaterialTags(customMasterNode.SurfaceType);
+                var surfaceTags = ShaderGenerator.BuildMaterialTags(SurfaceType.Opaque);
                 var tagsBuilder = new ShaderStringBuilder(0);
                 surfaceTags.GetTags(tagsBuilder, "UniversalPipeline");
                 subShader.AddShaderChunk(tagsBuilder.ToString());
                 
-                CustomSubShader.GenerateShaderPass(customMasterNode, litPass, mode, subShader, sourceAssetDependencyPaths);
+                CustomSubShader.GenerateShaderPass(customMasterNode, this.litPass, mode, subShader, sourceAssetDependencyPaths);
+                CustomSubShader.GenerateShaderPass(customMasterNode, this.outlinePass, mode, subShader, sourceAssetDependencyPaths);
+                CustomSubShader.GenerateShaderPass(customMasterNode, this.shadowCasterPass, mode, subShader, sourceAssetDependencyPaths);
+                CustomSubShader.GenerateShaderPass(customMasterNode, this.depthOnlyPass, mode, subShader, sourceAssetDependencyPaths);
             }
 
             subShader.Deindent();
             subShader.AddShaderChunk("}", true);
+            subShader.AddShaderChunk("CustomEditor \"CustomShaderGUI\"", true);
 
             return subShader.GetShaderString(0);
         }

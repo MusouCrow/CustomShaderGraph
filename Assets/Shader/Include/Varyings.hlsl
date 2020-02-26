@@ -1,3 +1,7 @@
+#if defined(SHADERPASS_SHADOWCASTER)
+    float3 _LightDirection;
+#endif
+
 Varyings BuildVaryings(Attributes input)
 {
     Varyings output = (Varyings)0;
