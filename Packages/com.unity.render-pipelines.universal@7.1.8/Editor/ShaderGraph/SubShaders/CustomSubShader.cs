@@ -24,15 +24,35 @@ namespace UnityEditor.Rendering.Universal {
             scope = KeywordScope.Global,
         };
 
+        private static KeywordDescriptor SurfaceTypeTransparent = new KeywordDescriptor() {
+            displayName = "Surface Type Transparent",
+            referenceName = "_SURFACE_TYPE_TRANSPARENT",
+            type = KeywordType.Boolean,
+            definition = KeywordDefinition.ShaderFeature,
+            scope = KeywordScope.Global,
+        };
+
+        private static KeywordDescriptor AlphaPremultiply = new KeywordDescriptor() {
+            displayName = "Alpha Premultiply",
+            referenceName = "_ALPHAPREMULTIPLY_ON",
+            type = KeywordType.Boolean,
+            definition = KeywordDefinition.ShaderFeature,
+            scope = KeywordScope.Global,
+        };
+
+        private static KeywordDescriptor AlphaClip = new KeywordDescriptor() {
+            displayName = "Alpha Clip",
+            referenceName = "_ALPHATEST_ON",
+            type = KeywordType.Boolean,
+            definition = KeywordDefinition.ShaderFeature,
+            scope = KeywordScope.Global,
+        };
+
         private static ActiveFields GetActiveFieldsFromMasterNode(CustomMasterNode masterNode, ShaderPass pass) {
             var activeFields = new ActiveFields();
             var baseActiveFields = activeFields.baseInstance;
 
             baseActiveFields.Add("features.graphPixel");
-
-            if (masterNode.IsSlotConnected(CustomMasterNode.AlphaThresholdSlotId) || masterNode.GetInputSlots<Vector1MaterialSlot>().First(x => x.id == CustomMasterNode.AlphaThresholdSlotId).value > 0.0f) {
-                baseActiveFields.Add("AlphaClip");
-            }
 
             return activeFields;
         }
@@ -72,8 +92,13 @@ namespace UnityEditor.Rendering.Universal {
                     "target 2.0",
                     "multi_compile_instancing",
                 },
+                keywords = new KeywordDescriptor[] {
+                    AlphaPremultiply,
+                    AlphaClip
+                },
 
-                BlendOverride = "Blend [_SrcBlend][_DstBlend]"
+                BlendOverride = "Blend [_SrcBlend][_DstBlend]",
+                ZWriteOverride = "ZWrite [_ZWrite]",
             };
 
             this.outlinePass = new ShaderPass() {
@@ -85,6 +110,7 @@ namespace UnityEditor.Rendering.Universal {
                 pixelPorts = new List<int>() {
                     CustomMasterNode.ColorSlotId,
                     CustomMasterNode.AlphaSlotId,
+                    CustomMasterNode.AlphaThresholdSlotId
                 },
 
                 requiredAttributes = new List<string>() {
@@ -104,15 +130,21 @@ namespace UnityEditor.Rendering.Universal {
                     "target 2.0",
                     "multi_compile_instancing",
                 },
+                keywords = new KeywordDescriptor[] {
+                    SurfaceTypeTransparent,
+                    AlphaClip
+                },
 
                 CullOverride = "Cull Front",
+                BlendOverride = "Blend [_SrcBlend][_DstBlend]",
+                ZWriteOverride = "ZWrite [_ZWrite]",
             };
 
             this.depthOnlyPass = new ShaderPass() {
                 displayName = "DepthOnly",
                 referenceName = "SHADERPASS_DEPTHONLY",
                 lightMode = "DepthOnly",
-                passInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/DepthOnlyPass.hlsl",
+                passInclude = "Assets/Shader/Include/DepthOnlyPass.hlsl",
                 varyingsInclude = "Assets/Shader/Include/Varyings.hlsl",
 
                 pixelPorts = new List<int>() {
@@ -132,6 +164,9 @@ namespace UnityEditor.Rendering.Universal {
                     "target 2.0",
                     "multi_compile_instancing",
                 },
+                keywords = new KeywordDescriptor[] {
+                    AlphaClip
+                },
 
                 ZWriteOverride = "ZWrite On",
                 ColorMaskOverride = "ColorMask 0",
@@ -141,7 +176,7 @@ namespace UnityEditor.Rendering.Universal {
                 displayName = "ShadowCaster",
                 referenceName = "SHADERPASS_SHADOWCASTER",
                 lightMode = "ShadowCaster",
-                passInclude = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShadowCasterPass.hlsl",
+                passInclude = "Assets/Shader/Include/ShadowCasterPass.hlsl",
                 varyingsInclude = "Assets/Shader/Include/Varyings.hlsl",
 
                 pixelPorts = new List<int>() {
@@ -167,6 +202,7 @@ namespace UnityEditor.Rendering.Universal {
                 },
                 keywords = new KeywordDescriptor[] {
                     SmoothnessChannelKeyword,
+                    AlphaClip
                 },
 
                 ZWriteOverride = "ZWrite On",

@@ -1,19 +1,12 @@
-#ifndef CUSTOM_OUTLINE_PASS_INCLUDED
-#define CUSTOM_OUTLINE_PASS_INCLUDED
+#ifndef CUSTOM_DEPTH_ONLY_PASS_INCLUDED
+#define CUSTOM_DEPTH_ONLY_PASS_INCLUDED
 
 PackedVaryings vert(Attributes input)
 {
     Varyings output = (Varyings)0;
-
-    float3 positionWS = TransformObjectToWorld(input.positionOS);
-    float3 positionVS = TransformWorldToView(positionWS);
-    float3 normal = mul((float3x3)UNITY_MATRIX_IT_MV, input.normalOS);
-    normal.z = -4.0;
-    positionVS += normalize(normal) * 0.01;
-    output.positionCS = TransformWViewToHClip(positionVS);
-
-    PackedVaryings packedOutput = PackVaryings(output);
-
+    output = BuildVaryings(input);
+    PackedVaryings packedOutput = (PackedVaryings)0;
+    packedOutput = PackVaryings(output);
     return packedOutput;
 }
 
@@ -30,11 +23,7 @@ half4 frag(PackedVaryings packedInput) : SV_TARGET
     clip(surfaceDescription.Alpha - surfaceDescription.AlphaClipThreshold);
 #endif
 
-#ifdef _SURFACE_TYPE_TRANSPARENT
-    return half4(0.0, 0.0, 0.0, 0.0);
-#endif
-
-    return half4(1.0, 0.0, 0.0, 1.0);
+    return 0;
 }
 
 #endif

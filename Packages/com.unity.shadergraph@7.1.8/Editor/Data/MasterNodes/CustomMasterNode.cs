@@ -46,6 +46,7 @@ namespace UnityEditor.ShaderGraph {
             
             PropertyUtil2.AddProperty(properties, "SrcBlend", "_SrcBlend", 1, true);
             PropertyUtil2.AddProperty(properties, "DstBlend", "_DstBlend", 0, true);
+            PropertyUtil2.AddProperty(properties, "ZWrite", "_ZWrite", 1, true);
         }
     }
 }
