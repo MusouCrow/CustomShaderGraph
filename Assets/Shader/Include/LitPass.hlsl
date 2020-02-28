@@ -19,14 +19,14 @@ half4 frag(PackedVaryings packedInput) : SV_TARGET
     SurfaceDescription surfaceDescription = SurfaceDescriptionFunction(surfaceDescriptionInputs);
 
 #ifdef _ALPHATEST_ON
-    clip(surfaceDescription.Alpha - surfaceDescription.AlphaClipThreshold);
+    clip(surfaceDescription.Color.a - _AlphaClip);
 #endif
 
 #ifdef _ALPHAPREMULTIPLY_ON
-    surfaceDescription.Color *= surfaceDescription.Alpha;
+    surfaceDescription.Color.rgb *= surfaceDescription.Color.a;
 #endif
 
-    return half4(surfaceDescription.Color, surfaceDescription.Alpha);
+    return surfaceDescription.Color;
 }
 
 #endif

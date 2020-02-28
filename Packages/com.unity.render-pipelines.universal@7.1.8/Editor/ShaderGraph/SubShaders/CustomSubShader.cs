@@ -75,9 +75,7 @@ namespace UnityEditor.Rendering.Universal {
                 varyingsInclude = "Assets/Shader/Include/Varyings.hlsl",
 
                 pixelPorts = new List<int>() {
-                    CustomMasterNode.ColorSlotId,
-                    CustomMasterNode.AlphaSlotId,
-                    CustomMasterNode.AlphaThresholdSlotId
+                    CustomMasterNode.ColorSlotId
                 },
 
                 includes = new List<string>() {
@@ -99,6 +97,7 @@ namespace UnityEditor.Rendering.Universal {
 
                 BlendOverride = "Blend [_SrcBlend][_DstBlend]",
                 ZWriteOverride = "ZWrite [_ZWrite]",
+                CullOverride = "Cull [_Cull]",
             };
 
             this.outlinePass = new ShaderPass() {
@@ -108,9 +107,7 @@ namespace UnityEditor.Rendering.Universal {
                 varyingsInclude = "Assets/Shader/Include/Varyings.hlsl",
 
                 pixelPorts = new List<int>() {
-                    CustomMasterNode.ColorSlotId,
-                    CustomMasterNode.AlphaSlotId,
-                    CustomMasterNode.AlphaThresholdSlotId
+                    CustomMasterNode.ColorSlotId
                 },
 
                 requiredAttributes = new List<string>() {
@@ -135,9 +132,9 @@ namespace UnityEditor.Rendering.Universal {
                     AlphaClip
                 },
 
-                CullOverride = "Cull Front",
                 BlendOverride = "Blend [_SrcBlend][_DstBlend]",
                 ZWriteOverride = "ZWrite [_ZWrite]",
+                CullOverride = "Cull Front",
             };
 
             this.depthOnlyPass = new ShaderPass() {
@@ -148,8 +145,7 @@ namespace UnityEditor.Rendering.Universal {
                 varyingsInclude = "Assets/Shader/Include/Varyings.hlsl",
 
                 pixelPorts = new List<int>() {
-                    CustomMasterNode.AlphaSlotId,
-                    CustomMasterNode.AlphaThresholdSlotId
+                    CustomMasterNode.ColorSlotId
                 },
 
                 includes = new List<string>() {
@@ -170,6 +166,7 @@ namespace UnityEditor.Rendering.Universal {
 
                 ZWriteOverride = "ZWrite On",
                 ColorMaskOverride = "ColorMask 0",
+                CullOverride = "Cull [_Cull]",
             };
 
             this.shadowCasterPass = new ShaderPass() {
@@ -180,8 +177,7 @@ namespace UnityEditor.Rendering.Universal {
                 varyingsInclude = "Assets/Shader/Include/Varyings.hlsl",
 
                 pixelPorts = new List<int>() {
-                    CustomMasterNode.AlphaSlotId,
-                    CustomMasterNode.AlphaThresholdSlotId
+                    CustomMasterNode.ColorSlotId
                 },
 
                 requiredAttributes = new List<string>() {
@@ -207,6 +203,7 @@ namespace UnityEditor.Rendering.Universal {
 
                 ZWriteOverride = "ZWrite On",
                 ZTestOverride = "ZTest LEqual",
+                CullOverride = "Cull [_Cull]",
             };
         }
 
@@ -237,14 +234,18 @@ namespace UnityEditor.Rendering.Universal {
                 subShader.AddShaderChunk(tagsBuilder.ToString());
                 
                 CustomSubShader.GenerateShaderPass(customMasterNode, this.litPass, mode, subShader, sourceAssetDependencyPaths);
-                CustomSubShader.GenerateShaderPass(customMasterNode, this.outlinePass, mode, subShader, sourceAssetDependencyPaths);
+                
+                if (customMasterNode.Outline.isOn) {
+                    CustomSubShader.GenerateShaderPass(customMasterNode, this.outlinePass, mode, subShader, sourceAssetDependencyPaths);
+                }
+                
                 CustomSubShader.GenerateShaderPass(customMasterNode, this.shadowCasterPass, mode, subShader, sourceAssetDependencyPaths);
                 CustomSubShader.GenerateShaderPass(customMasterNode, this.depthOnlyPass, mode, subShader, sourceAssetDependencyPaths);
             }
 
             subShader.Deindent();
             subShader.AddShaderChunk("}", true);
-            subShader.AddShaderChunk("CustomEditor \"CustomShaderGUI\"", true);
+            subShader.AddShaderChunk("CustomEditor \"Game.CustomShaderGUI\"", true);
 
             return subShader.GetShaderString(0);
         }
