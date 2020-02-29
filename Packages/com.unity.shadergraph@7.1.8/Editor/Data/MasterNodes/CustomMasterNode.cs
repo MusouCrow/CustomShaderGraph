@@ -57,6 +57,7 @@ namespace UnityEditor.ShaderGraph {
             PropertyUtil2.AddProperty(properties, "DstBlend", "_DstBlend", 0, true);
             PropertyUtil2.AddProperty(properties, "ZWrite", "_ZWrite", 1, true);
             PropertyUtil2.AddProperty(properties, "Cull", "_Cull", 2, true);
+            PropertyUtil2.AddProperty(properties, "Alpha Clip", "_AlphaClip", 1, false, FloatType.Slider);
         }
 
         protected override VisualElement CreateCommonSettingsElement() {

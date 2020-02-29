@@ -4,12 +4,13 @@ using UnityEditor.ShaderGraph.Internal;
 
 namespace UnityEditor.ShaderGraph {
     static class PropertyUtil2 {
-        public static void AddProperty(PropertyCollector properties, string displayName, string referenceName, float value, bool hidden) {
+        public static void AddProperty(PropertyCollector properties, string displayName, string referenceName, float value, bool hidden, FloatType floatType=FloatType.Default) {
             var property = new Vector1ShaderProperty() {
                 displayName = displayName,
                 overrideReferenceName = referenceName,
                 value = value,
-                hidden = hidden
+                hidden = hidden,
+                floatType = floatType
             };
 
             properties.AddShaderProperty(property);

@@ -37,6 +37,9 @@ namespace Game {
             DrawBlendMode(material, out bool additive);
             DrawCull(material, out bool twoSided);
 
+            base.OnGUI(materialEditor, properties);
+            
+            /*
             foreach (var v in properties) {
                 int index = material.shader.FindPropertyIndex(v.name);
                 var flags = material.shader.GetPropertyFlags(index);
@@ -61,6 +64,7 @@ namespace Game {
                     materialEditor.VectorProperty(v, v.displayName);
                 }
             }
+            */
 
             if (EditorGUI.EndChangeCheck()) {
                 this.Adjust(material, opaque, additive, twoSided);
