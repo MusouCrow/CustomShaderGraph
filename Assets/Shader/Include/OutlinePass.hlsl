@@ -9,7 +9,7 @@ PackedVaryings vert(Attributes input)
     float3 positionVS = TransformWorldToView(positionWS);
     float3 normal = mul((float3x3)UNITY_MATRIX_IT_MV, input.normalOS);
     normal.z = -4.0;
-    positionVS += normalize(normal) * 0.01;
+    positionVS += normalize(normal) * 0.0075;
     output.positionCS = TransformWViewToHClip(positionVS);
 
     PackedVaryings packedOutput = PackVaryings(output);

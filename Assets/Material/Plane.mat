@@ -57,6 +57,7 @@ Material:
     - _BumpScale: 1
     - _Cull: 2
     - _Cutoff: 0.5
+    - _DIFFUSE: 0
     - _DstBlend: 0
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
@@ -67,6 +68,7 @@ Material:
     - _OcclusionStrength: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
+    - _SPECULAR: 0
     - _Smoothness: 64
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
