@@ -11,7 +11,13 @@
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.ShaderKeyword"
             },
-            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"c75ea024-4652-42f1-b0b1-8aed58be2b03\"\n    },\n    \"m_Name\": \"Lighting\",\n    \"m_DefaultReferenceName\": \"BOOLEAN_8EEC4290_ON\",\n    \"m_OverrideReferenceName\": \"_LIGHTING_ON\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_KeywordType\": 0,\n    \"m_KeywordDefinition\": 0,\n    \"m_KeywordScope\": 1,\n    \"m_Entries\": [],\n    \"m_Value\": 1,\n    \"m_IsEditable\": true,\n    \"m_IsExposable\": true\n}"
+            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"36440ca9-0709-4447-b7c6-11bf9069d3c8\"\n    },\n    \"m_Name\": \"SHADOWS_SOFT\",\n    \"m_DefaultReferenceName\": \"BOOLEAN_2D63633F_ON\",\n    \"m_OverrideReferenceName\": \"_SHADOWS_SOFT\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_KeywordType\": 0,\n    \"m_KeywordDefinition\": 1,\n    \"m_KeywordScope\": 1,\n    \"m_Entries\": [],\n    \"m_Value\": 1,\n    \"m_IsEditable\": true,\n    \"m_IsExposable\": true\n}"
+        },
+        {
+            "typeInfo": {
+                "fullName": "UnityEditor.ShaderGraph.ShaderKeyword"
+            },
+            "JSONnodeData": "{\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"c75ea024-4652-42f1-b0b1-8aed58be2b03\"\n    },\n    \"m_Name\": \"Lighting\",\n    \"m_DefaultReferenceName\": \"BOOLEAN_8EEC4290_ON\",\n    \"m_OverrideReferenceName\": \"_LIGHTING_ON\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_KeywordType\": 0,\n    \"m_KeywordDefinition\": 0,\n    \"m_KeywordScope\": 0,\n    \"m_Entries\": [],\n    \"m_Value\": 1,\n    \"m_IsEditable\": true,\n    \"m_IsExposable\": true\n}"
         }
     ],
     "m_SerializableNodes": [

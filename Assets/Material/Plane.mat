@@ -64,9 +64,11 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _LIGHTING: 1
+    - _LightStrength: 0.15
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _QueueOffset: 0
+    - _RIM: 0
     - _ReceiveShadows: 1
     - _SPECULAR: 0
     - _Smoothness: 64
@@ -84,6 +86,8 @@ Material:
     - _DiffuseRange: {r: 0.5, g: 0.7, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _LightRange: {r: 0.9, g: 1, b: 0, a: 0}
+    - _RimDirection: {r: 0, g: 0, b: 0, a: 0}
+    - _RimRange: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &5043718046827939923
