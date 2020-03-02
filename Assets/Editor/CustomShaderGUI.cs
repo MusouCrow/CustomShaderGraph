@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEditor;
@@ -28,6 +31,12 @@ namespace Game {
             twoSided = EditorGUILayout.Toggle("Two Sided", twoSided);
         }
         
+        private static int Sort(MaterialProperty a, MaterialProperty b) {
+            return a.displayName.Length - b.displayName.Length;
+        }
+
+        private Dictionary<string, bool> foldoutMap = new Dictionary<string, bool>();
+
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties) {
             EditorGUI.BeginChangeCheck();
             
@@ -37,9 +46,9 @@ namespace Game {
             DrawBlendMode(material, out bool additive);
             DrawCull(material, out bool twoSided);
 
-            base.OnGUI(materialEditor, properties);
-            
-            /*
+            var typeMap = new Dictionary<string, List<MaterialProperty>>();
+            var keys = new List<string>();
+
             foreach (var v in properties) {
                 int index = material.shader.FindPropertyIndex(v.name);
                 var flags = material.shader.GetPropertyFlags(index);
@@ -48,23 +57,48 @@ namespace Game {
                     continue;
                 }
 
-                if (v.type == MaterialProperty.PropType.Color) {
-                    materialEditor.ColorProperty(v, v.displayName);
+                int pos = v.displayName.IndexOf(" ");
+                string key = pos == -1 ? v.displayName : v.displayName.Substring(0, pos);
+
+                if (!typeMap.ContainsKey(key)) {
+                    typeMap.Add(key, new List<MaterialProperty>());
+                    keys.Add(key);
                 }
-                else if (v.type == MaterialProperty.PropType.Float) {
-                    materialEditor.FloatProperty(v, v.displayName);
+                
+                typeMap[key].Add(v);
+            }
+
+            keys.Sort((string a, string b) => {
+                return typeMap[a].Count - typeMap[b].Count;
+            });
+
+            foreach (var k in keys) {
+                if (typeMap[k].Count > 1) {
+                    typeMap[k].Sort(Sort);
+
+                    if (!this.foldoutMap.ContainsKey(k)) {
+                        this.foldoutMap[k] = false;
+                    }
+
+                    this.foldoutMap[k] = EditorGUILayout.BeginFoldoutHeaderGroup(this.foldoutMap[k], k);
+
+                    if (this.foldoutMap[k]) {
+                        foreach (var v in typeMap[k]) {
+                            int pos = v.displayName.IndexOf(" ");
+                            string name = pos == -1 ? v.displayName : v.displayName.Substring(pos + 1);
+
+                            materialEditor.ShaderProperty(v, name);
+                        }
+                    }
+
+                    EditorGUILayout.EndFoldoutHeaderGroup();
                 }
-                else if (v.type == MaterialProperty.PropType.Range) {
-                    materialEditor.RangeProperty(v, v.displayName);
-                }
-                else if (v.type == MaterialProperty.PropType.Texture) {
-                    materialEditor.TextureProperty(v, v.displayName);
-                }
-                else if (v.type == MaterialProperty.PropType.Vector) {
-                    materialEditor.VectorProperty(v, v.displayName);
+                else {
+                    foreach (var v in typeMap[k]) {
+                        materialEditor.ShaderProperty(v, v.displayName);
+                    }
                 }
             }
-            */
 
             if (EditorGUI.EndChangeCheck()) {
                 this.Adjust(material, opaque, additive, twoSided);
